@@ -1,5 +1,0 @@
-username = "ml-engineer-id"
-password = "YesWeCan!2024"
-app_client_ID = "-op8tbEm4Lru11GOWHaGvQ"
-app_client_secret = "O7xLPfX-yV1hUyxeQcAvvLaqVx0luA"
-user_agent = "python:ETLApp:v1.0 (by /u/ml-engineer-id)"
