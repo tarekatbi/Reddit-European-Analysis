@@ -11,8 +11,6 @@
 from datetime import datetime
 from airflow.models import DAG
 from pandas import DataFrame
-import praw
-from supabase import create_client, Client
 import pandas as pd
 
 
@@ -20,11 +18,22 @@ import pandas as pd
 ############################## DAG Arguments ###################################
 ################################################################################
 
+
 def _job():
+    import sys
+    import subprocess
+
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "praw"])
+
+    import praw    
+    
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "supabase"])
+
+    import supabase
+
     from datetime import datetime
     from airflow.models import DAG
     from pandas import DataFrame
-    import praw
     from supabase import create_client, Client
     import pandas as pd
 
@@ -131,9 +140,7 @@ def _job():
                 .execute()
             )
 
-
-
-    _table = supabase.table('hot_posts').select("*").execute()
+    _table = supabase.table("hot_posts").select("*").execute()
     fetch = True
     for param in _table:
         if fetch:
@@ -145,49 +152,62 @@ def _job():
 
     bool_columns = ["over_18", "is_original_content"]
     count_columns = ["num_comments", "score"]
-    avg_columns = ["num_comments",	"score", "upvote_ratio"]
+    avg_columns = ["num_comments", "score", "upvote_ratio"]
 
     for col in bool_columns:
-        dataset[f"count_{col}"] = dataset.groupby('country')[col].transform(lambda x: x.sum())
+        dataset[f"count_{col}"] = dataset.groupby("country")[col].transform(
+            lambda x: x.sum()
+        )
 
     for col in count_columns:
-        dataset[f"count_{col}"] = dataset.groupby('country')[col].transform('sum')
+        dataset[f"count_{col}"] = dataset.groupby("country")[col].transform("sum")
     for col in avg_columns:
-        dataset[f"avg_{col}"] = dataset.groupby('country')[col].transform('mean')
+        dataset[f"avg_{col}"] = dataset.groupby("country")[col].transform("mean")
 
     # Charger le fichier CSV capital_monde_longitude_latitude
-    df_capital = pd.read_csv('..\include\dataset\country-capital-lat-long-population.csv')
-    df_capital.rename(columns={"Country" : "country"}, inplace=True)
+    df_capital = pd.read_csv(
+        "country-capital-lat-long-population.csv"
+    )
+    df_capital.rename(columns={"Country": "country"}, inplace=True)
     # Fusionner les deux DataFrames sur la colonne 'country'
-    df_out = pd.merge(dataset, df_capital, how='left', on='country')
+    df_out = pd.merge(dataset, df_capital, how="left", on="country")
     # Convert the datetime column to datetime type
-    df_out['time'] = pd.to_datetime(df_out['time'], errors='coerce')
+    df_out["time"] = pd.to_datetime(df_out["time"], errors="coerce")
     # Create a new column with the formatted date 'year_month_day'
-    df_out['time'] = df_out['time'].dt.strftime('%Y-%m-%d')
-    usefull_columns = ['time', 'country', 'Capital City', 'Latitude', 'Longitude', 'Population',
-                   'count_over_18', 'count_is_original_content', 'count_num_comments', 'count_score',
-                   'avg_num_comments', 'avg_score','avg_upvote_ratio']
+    df_out["time"] = df_out["time"].dt.strftime("%Y-%m-%d")
+    usefull_columns = [
+        "time",
+        "country",
+        "Capital City",
+        "Latitude",
+        "Longitude",
+        "Population",
+        "count_over_18",
+        "count_is_original_content",
+        "count_num_comments",
+        "count_score",
+        "avg_num_comments",
+        "avg_score",
+        "avg_upvote_ratio",
+    ]
     df_out = df_out[usefull_columns].drop_duplicates().reset_index()
     print("done")
+
 
 def _done():
     print("done v2")
 
+
 from airflow.operators.python import PythonOperator
 
-with DAG(dag_id='reddit_analysis',
-         start_date=datetime(2024, 1, 14),
-         schedule='@daily',
-         catchup=False) as dag:
-    
-    job = PythonOperator(
-        task_id="job",
-        python_callable=_job
-    )
+with DAG(
+    dag_id="reddit_analysis",
+    start_date=datetime(2024, 1, 14),
+    schedule="@daily",
+    catchup=False,
+) as dag:
+    job = PythonOperator(task_id="job", python_callable=_job)
 
-    done = PythonOperator(
-        task_id="done",
-        python_callable=_done
-    )
+    done = PythonOperator(task_id="done", python_callable=_done)
 
     job >> done
