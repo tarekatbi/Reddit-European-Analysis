@@ -39,8 +39,8 @@ def get_credentials() -> dict:
     :return: credentials dict
     """
 
-    with open("../include/credentials.yaml", "r") as f:
-        credentials = yaml.safe_load(f)
+    # your credentials function here ! (you can use a yaml file)
+    credentials = {}
 
     return credentials
 
@@ -284,10 +284,10 @@ def transform() -> DataFrame:
     return df_out
 
 
-def load(df: DataFrame) -> None:
+def load(ti) -> None:
     """
     Load a DataFrame into Supabase
-    :param df: DataFrame to load
+    :param ti: task instance
     :return: None
     """
 
@@ -314,6 +314,9 @@ def load(df: DataFrame) -> None:
     ########################################
     # Load
     ########################################
+
+    # Step 0 : Get the transformed DataFrame
+    df: DataFrame = ti.xcom_pull(task_ids="transform")
 
     # Step 1 : Drop the table if it exists
     drop_table("reddit_european_analysis", supabase)
@@ -384,7 +387,6 @@ with DAG(
     load = PythonOperator(
         task_id="load",
         python_callable=load,
-        op_kwargs={"df": transform},
         dag=dag,
     )
 
