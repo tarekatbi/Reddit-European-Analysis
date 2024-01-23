@@ -1,32 +1,26 @@
 # Project Overview
 
-This project aims to perform Reddit European Weekly Analysis. It contains four main sections:
+This project is dedicated to conducting a weekly analysis of European Reddit activity. It involves executing a data pipeline through Airflow, with scheduled runs every week.
 
-## 1. ETL
+## 1. Data Engineering Workflow
 
-In this section, an Extract, Transform, Load (ETL) process to gather data from Reddit was implemented
+In this section, a data engineering workflow orchestrated by [Airflow](https://airflow.apache.org/) was implemented.
 
 !["Workflow"]( src/images/workflow.png)
 
-### Extract
-
-[Reddit API](https://www.reddit.com/dev/api/) was used to extract posts and comments related to European topics. By making API requests, we retrieved the necessary data from Reddit's servers.
-
-### Transform
-
-After extracting the data, various transformations was performed to clean and filter it. This involved removing irrelevant information, formatting data into a consistent structure, and handling any inconsistencies or errors.
-
-### Load
-
-Once the data was transformed, it was loaded into a Supabase database for further analysis. [Supabase](https://supabase.io/), an open-source alternative to Firebase, which provides a PostgreSQL database with a built-in API. Supabase allows to easily store and manage our Reddit data, enabling efficient querying and manipulation.
-
-By implementing this ETL process, I were able to gather, clean, and load the necessary data from Reddit for our analysis.
-
-## 2. REDDIT et PRAW
+### Data Source - REDDIT (PRAW)
 
 [PRAW (Python Reddit API Wrapper)](https://praw.readthedocs.io/en/latest/) is a library to interact with the Reddit API. We wrote code to authenticate with Reddit, retrieve posts and comments, and perform various operations such as upvoting, downvoting, and commenting. This allowed us to gather the necessary data for our analysis.
 
-As you can see here; There have three tables
+### Data Ingestion (Extract)
+
+[Reddit API](https://www.reddit.com/dev/api/) was used to extract posts and comments related to European topics. By making API requests, we retrieved the necessary data from Reddit's servers.
+
+### Data Storage (Load)
+
+[Supabase](https://supabase.io/), an open-source alternative to Firebase, which provides a PostgreSQL database with a built-in API. Supabase allows to easily store and manage our Reddit data, enabling efficient querying and manipulation.
+
+As you can see here; I have three tables in my Database
 
 !["tables schema"]( src/images/schema_tables.png)
 
@@ -45,11 +39,31 @@ Table that contains for almosr each country in the world, its population, capita
 
 The final table that contains for each European Country : Country Caracteristics (Capital City, Latitude, Longitude, Population) , and some Reddit Usage Statistics (count over 18 posts, count of original content, count number comments, count score, avgerage number of comments, average score, average upvote ratio)
 
-## 3. Supabase
+### Data Processing (Transform)
 
-[Supabase](https://supabase.io/) is an open-source alternative to Firebase that provides a PostgreSQL database with a built-in API. It is often utilized to store and manage our Reddit data, enabling us to easily query and manipulate the data for analysis purposes.
+After extracting the data, various processing and transformations was performed to clean and filter it for the two tables `hot_posts` and `country-capital-lat-long-population`.
 
-## 4. Airflow et Astro dev
+This involved removing irrelevant information, formatting data into a consistent structure, and handling any inconsistencies or errors.
+
+### Final Data Storage (Load)
+
+Once the data was transformed, it was loaded into a Supabase database for further analysis.
+
+By implementing this workflow, I were able to gather, clean, and load the necessary data from Reddit for our analysis.
+
+## 2. Dashboard and Visualisation
+
+Using [Power BI](https://www.microsoft.com/en-us/power-platform/products/power-bi) for Data Visualisation, here is the main Dashboard
+
+!["Dashboard"]( src/images/dashboard.png)
+
+* This dashboard highlights the Reddit Weekly Analysis
+
+* You can find the dashboard file in : `./src/dashboard/reddit_european_weekly_analysis_dashboard.pbix`
+
+* A Python script for automating the weekly refresh of this dashboard will be available soon.
+
+## 3. Airflow et Astro dev
 
 [Airflow](https://airflow.apache.org/) and [Astro dev](https://astro.dev/) were incorporated into the project. Airflow is a platform to programmatically author, schedule, and monitor workflows, while Astro dev is a tool for managing infrastructure as code. I used Airflow to schedule and automate our ETL process, ensuring that data is regularly updated. Astro dev helped us manage our infrastructure, making it easier to deploy and scale our project.
 
