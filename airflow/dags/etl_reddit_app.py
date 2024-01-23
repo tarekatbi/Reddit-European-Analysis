@@ -25,13 +25,10 @@ import praw
 import supabase
 from pandas import DataFrame
 from supabase import create_client, Client
-import pandas as pd
-
 
 ################################################################################
 ############################## DAG Arguments ###################################
 ################################################################################
-
 
 def get_credentials() -> dict:
     """
@@ -43,7 +40,6 @@ def get_credentials() -> dict:
     credentials = {}
 
     return credentials
-
 
 def read_table(table_name: str, supabase: Client) -> DataFrame:
     """
@@ -64,7 +60,6 @@ def read_table(table_name: str, supabase: Client) -> DataFrame:
 
     return df
 
-
 def drop_table(table_name: str, supabase: Client) -> None:
     """
     Method to drop a supabase table
@@ -73,7 +68,6 @@ def drop_table(table_name: str, supabase: Client) -> None:
     :return: None
     """
     data, count = supabase.table(table_name).delete().gte("id", 0).execute()
-
 
 def extract() -> None:
     """
@@ -197,7 +191,6 @@ def extract() -> None:
                 .execute()
             )
 
-
 def transform() -> DataFrame:
     """
     Transform table of raw data from Supabase into a table of clean data,
@@ -283,7 +276,6 @@ def transform() -> DataFrame:
     # step 9 : return the dataframe
     return df_out
 
-
 def load(ti) -> None:
     """
     Load a DataFrame into Supabase
@@ -344,7 +336,6 @@ def load(ti) -> None:
             )
             .execute()
         )
-
 
 default_args = {
     "owner": "ilyes_djerfaf",
