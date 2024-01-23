@@ -6,6 +6,8 @@ This project aims to perform Reddit European Weekly Analysis. It contains four m
 
 In this section, an Extract, Transform, Load (ETL) process to gather data from Reddit was implemented
 
+!["Workflow"]( src/images/workflow.png)
+
 ### Extract
 
 [Reddit API](https://www.reddit.com/dev/api/) was used to extract posts and comments related to European topics. By making API requests, we retrieved the necessary data from Reddit's servers.
@@ -73,7 +75,7 @@ To clone and use this project, follow these steps:
     pip install -r requierements.txt
     ```
 
-3. Please make sure to install **astro** and **docker**, follow this link : `https://docs.astronomer.io/astro/cli/install-cli`
+3. Please make sure to install **astro** and **docker**, follow this link : [Astro CLI](https://docs.astronomer.io/astro/cli/install-cli)
 
 4. Once **astro** and **docker** are installed, run this command to start the pipeline
     ```
